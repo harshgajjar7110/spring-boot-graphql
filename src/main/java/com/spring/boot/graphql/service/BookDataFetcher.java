@@ -2,7 +2,7 @@ package com.spring.boot.graphql.service;
 
 import com.spring.boot.graphql.modal.Book;
 import com.spring.boot.graphql.modal.User;
-import com.spring.boot.graphql.repository.UserRepository;
+import com.spring.boot.graphql.repository.BookRepository;
 import graphql.schema.DataFetcher;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -12,55 +12,55 @@ import java.util.Map;
 import java.util.Objects;
 
 @Component
-public class UserDataFetcher {
-
+public class BookDataFetcher {
     @Autowired
-    UserRepository userRepository;
+    BookRepository bookRepository;
 
 
-    public DataFetcher<User> getUser() {
+    public DataFetcher<Book> getBook() {
         return environment -> {
-            String id = environment.getArgument("id").toString();
-            return userRepository.findById(id).orElse(null);
+            User source = environment.getSource();
+            Book byUserId = bookRepository.findByUserId(source.getId()).orElse(new Book());
+            return byUserId;
         };
 
 
     }
 
-    public DataFetcher<List<User>> getAllUser() {
+    public DataFetcher<List<Book>> getAllBook() {
         return dataFetchingEnvironment -> {
 
-            return userRepository.findAll();
+            return bookRepository.findAll();
         };
     }
 
-    public DataFetcher<Object> addUser() {
+    public DataFetcher<Object> addBook() {
         return dataFetchingEnvironment -> {
             Map<String, Object> arguments = dataFetchingEnvironment.getArguments();
 
-            User save = userRepository.save(new User(null, arguments.get("name").toString(), arguments.get("address").toString()));
+            Book save = bookRepository.save(new Book(null, arguments.get("name").toString(), arguments.get("userId").toString()));
             return save;
         };
     }
 
-    public DataFetcher<Object> deleteUser() {
+    public DataFetcher<Object> deleteBook() {
         return dataFetchingEnvironment -> {
             Map<String, Object> arguments = dataFetchingEnvironment.getArguments();
-            userRepository.deleteById(arguments.get("id").toString());
+            bookRepository.deleteById(arguments.get("id").toString());
             return true;
         };
     }
 
-    public DataFetcher updateUser() {
+    public DataFetcher updateBook() {
         return dataFetchingEnvironment -> {
-            User save = null;
+            Book save = null;
             Map<String, Object> arguments = dataFetchingEnvironment.getArguments();
-            User findById = userRepository.findById(arguments.get("id").toString()).orElse(null);
+            Book findById = bookRepository.findById(arguments.get("id").toString()).orElse(null);
             if (Objects.nonNull(findById)) {
 
-                findById.setAddress(arguments.get("address").toString());
                 findById.setName(arguments.get("name").toString());
-                save = userRepository.save(findById);
+                findById.setUserId(arguments.get("id").toString());
+                save = bookRepository.save(findById);
             }
             return save;
 

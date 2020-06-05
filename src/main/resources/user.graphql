@@ -6,15 +6,27 @@ schema {
 type Query {
     allUser: [User]
     user(id: String): User
+    allBook:[Book]
 }
 type User {
     id: String
     name: String
     address: String
+    book: Book
 }
 
+
+type Book {
+    id: String
+    name: String
+    userId:String
+
+}
 type Mutation {
     addUser(name:String,address:String!): User !
     deleteUser(id:String!): String!
     updateUser(id:String, name: String ,address: String): User !
+    addBook(name:String,userId:String): Book !
+    deleteBook(id:String!): String!
+    updateBook(id:String, name: String ,userId: String): User !
 }

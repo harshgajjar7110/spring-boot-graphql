@@ -26,6 +26,8 @@ public class GraphQlService {
 
     @Autowired
     private UserDataFetcher userDataFetcher;
+    @Autowired
+    private BookDataFetcher bookDataFetcher;
 
     // load schema at application start up
     @PostConstruct
@@ -46,11 +48,16 @@ public class GraphQlService {
         return RuntimeWiring.newRuntimeWiring()
                 .type("Query", typeWiring -> typeWiring
                         .dataFetcher("allUser", userDataFetcher.getAllUser())
-                        .dataFetcher("User", userDataFetcher.getUser()))
+
+                        .dataFetcher("user", userDataFetcher.getUser()))
+                .type("User", typeWiring -> typeWiring.dataFetcher("book", bookDataFetcher.getBook()))
                 .type("Mutation", typeWiring -> typeWiring
                         .dataFetcher("addUser", userDataFetcher.addUser())
                         .dataFetcher("deleteUser", userDataFetcher.deleteUser())
                         .dataFetcher("updateUser", userDataFetcher.updateUser())
+                        .dataFetcher("addBook", bookDataFetcher.addBook())
+                        .dataFetcher("deleteBook", bookDataFetcher.deleteBook())
+                        .dataFetcher("updateBook", bookDataFetcher.updateBook())
                 )
                 .build();
     }
